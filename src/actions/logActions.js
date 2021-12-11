@@ -1,4 +1,4 @@
-import { GET_LOGS,SET_LOADING,LOGS_ERROR,ADD_LOG,DELETE_LOG } from "./types";
+import { SEARCH_LOGS,UPDATE_LOG,GET_LOGS,SET_LOADING,LOGS_ERROR,ADD_LOG,DELETE_LOG,CLEAR_CURRENT,SET_CURRENT } from "./types";
 
 // export const getLogs = () =>{
 // return async (dispatch) =>{
@@ -28,7 +28,26 @@ export const getLogs = () => async dispatch => {
     } catch (err) {
         dispatch({
             type: LOGS_ERROR,
-            payload: err.response.data
+            payload: err.response.statusText
+        })
+    }
+};
+
+// Search server logs
+export const searchLogs = (text) => async dispatch => {
+    try {
+        setLoading();
+
+        const res = await fetch('/logs?q=${text}');
+        const data = await res.json();
+        dispatch({
+            type: SEARCH_LOGS,
+            payload: data
+        });
+    } catch (err) {
+        dispatch({
+            type: LOGS_ERROR,
+            payload: err.response.statusText
         })
     }
 };
@@ -49,14 +68,14 @@ export const addLog = (log) => async dispatch => {
         const data = await res.json();
 
         dispatch({
-            method: ADD_LOG,
+            type: ADD_LOG,
             payload: data
         });
 
     } catch (err) {
         dispatch({
-            type: ADD_LOG,
-            payload: err.response.data
+            type: LOGS_ERROR,
+            payload: err.response.statusText
         })
     }
 };
@@ -77,14 +96,55 @@ export const deleteLog = (id) => async dispatch => {
     } catch (err) {
         dispatch({
             type: LOGS_ERROR,
-            payload: err.response.data
+            payload: err.response.statusText
         })
     }
 };
 
+// update log
+export const updateLog = (log) => async dispatch => {
+    try {
+        setLoading();
+
+        const res = await fetch(`/logs/${log.id}`,{
+            method: 'PUT',
+            body: JSON.stringify(log),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await res.json();
+        
+        dispatch({
+            type: UPDATE_LOG,
+            payload: data
+        });
+    } catch (err) {
+        dispatch({
+            type: LOGS_ERROR,
+            payload: err.response.statusText
+        });
+    }
+};
 
 export const setLoading = () =>{
     return{
         type: SET_LOADING
+    };
+};
+
+// set current log
+export const setCurrent = (log) =>{
+    return{
+        type: SET_CURRENT,
+        payload: log
+    };
+};
+
+// Clear current log
+export const clearCurrent = () =>{
+    return{
+        type: CLEAR_CURRENT
     };
 };

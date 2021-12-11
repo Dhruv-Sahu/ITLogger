@@ -11,7 +11,7 @@ import store from './store'
 import 'materialize-css/dist/css/materialize.min.css';
 import M from 'materialize-css/dist/js/materialize.min.js';
 import EditLogModel from './components/logs/EditLogModel';
-import AddTechModel from './components/techs/AddTechModal';
+import AddTechModal from './components/techs/AddTechModal';
 
 
 const App = () => {
@@ -20,13 +20,13 @@ const App = () => {
     M.AutoInit();
   });
   return (
-    <Provider>
+    <Provider store={store}>
     <Fragment><SearchBar/>
     <div className="container">
       <AddBtn />
       <AddLogModel />
       <EditLogModel />
-      <AddTechModel />
+      <AddTechModal />
       <TechListModal />
       <Logs/>
     </div>
